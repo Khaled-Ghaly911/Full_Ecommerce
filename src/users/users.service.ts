@@ -49,6 +49,16 @@ export class UserService {
         return user;
     }
 
+    async getUserByEmail(email: string): Promise<User> {
+        let user: User | null = await this.userRepo.findOneBy({email});
+        
+        if(!user) {
+            throw new NotFoundException('user with this email is not found.');
+        }
+
+        return user;
+    }
+
     async getUser(id: number): Promise<User> {
         const user: User | null = await this.userRepo.findOneBy({id})
 

@@ -22,10 +22,10 @@ type Mutation {
 }
 
 input CreateUserInput {
-  email: String!
   name: String!
+  email: String!
   password: String!
-  admin: Boolean!
+  admin: Boolean! = false
 }
 
 input UpdateUserInput {

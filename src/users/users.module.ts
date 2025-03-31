@@ -12,5 +12,6 @@ import { User } from "./models/user";
         UserService,
         UserResolver
     ],
+    exports: [UserService]
 })
 export class UserModule {}
