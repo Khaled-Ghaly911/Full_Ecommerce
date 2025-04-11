@@ -1,13 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/users/users.service';
-import * as jwt from 'jsonwebtoken'
 import { User } from 'src/users/models/user';
-import { CreateUserInput } from 'src/users/dto/inputs/create-user.input';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/inputs/login-user.input';
 import { ConfigService } from '@nestjs/config';
-
-
+import { SignupUserDto } from './dto/inputs/signup-user.input';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -15,63 +13,73 @@ export class AuthService {
     
     constructor(
         private readonly userService: UserService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private jwtService: JwtService
     ) {}
 
     
-    async signUp(userDataDto: CreateUserInput): Promise<User> {
-        const hashedPassword: string =  await bcrypt.hash(userDataDto.password, this.salt_rounds);
-        userDataDto.password = hashedPassword;
-        return this.userService.createUser(userDataDto);
+    async signUp(userDataDto: SignupUserDto): Promise<User> {
+        const { password } = userDataDto;
+        const hashedPassword: string =  await bcrypt.hash(password, this.salt_rounds);
+        const userWithHashedPassword = { ...userDataDto, password: hashedPassword}; 
+        return this.userService.createUser(userWithHashedPassword);
     }
     
-    async logIn(userDataDto: LoginUserDto, session) {
+    async logIn(userDataDto: LoginUserDto) {
+        const JWT_SECRET = this.configService.get<string>('JWT_ACCESS_SECRET');
+        console.log('Loaded JWT_SECRET:', JWT_SECRET);
+
+        if (!JWT_SECRET) {
+            throw new Error('JWT_SECRET is missing Check .env file.');
+        }
+
         const user: User = await this.userService.getUserByEmail(userDataDto.email);
+
         if(!user) {
-            throw new Error('Invalid email or password');
+            throw new UnauthorizedException('Invalid email or password');
         }
         
         const passIsOk: boolean = await bcrypt.compare(userDataDto.password, user.password);
         
-        if(!user || !passIsOk){
+        if(!passIsOk){
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const JWT_SECRET = this.configService.get<string>('JWT_SECRET');
-        console.log('Loaded JWT_SECRET:', JWT_SECRET);
-
-        if (!JWT_SECRET) {
-            throw new Error('JWT_SECRET is missing! Check .env file.');
-        }
+        console.log(`Pass is ok : ${passIsOk}`);
         
-        const token = jwt.sign({id: user.id, email: user.email}, JWT_SECRET, { expiresIn: '1d' });
+        const payload = {
+            id: user.id,
+            name: user.name,
+            admin: user.admin,
+            email: user.email
+        };
 
-        session.jwt = token;
+        const accessToken = this.jwtService.sign(payload, {
+            secret: this.configService.get<string>('JWT_ACCESS_SECRET')
+        });
 
-        return user;
+        const refreshToken = this.jwtService.sign(
+            payload,
+            {
+            secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+            expiresIn: '7d',
+            },
+        );
+
+        console.log(`Access Token ------> ${accessToken}`)
+
+        return { accessToken, refreshToken, user };
     }
 
-    logout(session: any) {
-        session.jwt = null;
-    }
-    
-
-    verifyToken(token: string) {
-        const JWT_SECRET = this.configService.get<string>('JWT_SECRET');
-        console.log('Loaded JWT_SECRET:', JWT_SECRET);
-
-        if (!JWT_SECRET) {
-            throw new Error('JWT_SECRET is missing! Check .env file.');
-        }
-
+    async verifyToken(token: string) {
         try {
-          return jwt.verify(token, JWT_SECRET);
+          return await this.jwtService.verify(token, {
+            secret: this.configService.get<string>('JWT_ACCESS_SECRET')
+        });
         } catch (err) {
           throw new UnauthorizedException('Invalid or expired token');
         }
     }
-    
-    
 }
 
 

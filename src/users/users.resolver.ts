@@ -14,10 +14,10 @@ export class UserResolver {
 
     @Query(() => User, { nullable: true })
     getUser(@Args() getUserArgs: GetUserArgs) {
-        return this.userService.getUser(getUserArgs.userId);
+        return this.userService.getUserById(getUserArgs.userId);
     }
 
-    @Query((retunrs) => [User], {nullable: true})
+    @Query((returns) => [User], {nullable: true})
     getUsers(){
         return this.userService.getUsers();
     }

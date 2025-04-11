@@ -17,8 +17,4 @@ export class CreateUserInput {
     @IsString()
     @IsNotEmpty()
     password: string;
-
-    @Field({defaultValue: false})
-    @IsOptional()
-    admin: boolean;
 }

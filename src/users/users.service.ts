@@ -22,7 +22,7 @@ export class UserService {
             user = await this.userRepo.create(createUserData);
         }
 
-        return user;
+        return this.userRepo.save(user);
     }
 
     async updateUser(updateUserData: UpdateUserInput): Promise<User> {
@@ -59,7 +59,7 @@ export class UserService {
         return user;
     }
 
-    async getUser(id: number): Promise<User> {
+    async getUserById(id: number): Promise<User> {
         const user: User | null = await this.userRepo.findOneBy({id})
 
         if(!user) {

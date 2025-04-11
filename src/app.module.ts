@@ -17,7 +17,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: `src/schema.gql`
+      autoSchemaFile: `src/schema.gql`,
+      context: (({ req, res })=>({ req, res })),
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -30,7 +31,7 @@ import { AuthModule } from './auth/auth.module';
           password: String(config.get<string>('DB_PASSWORD')),
           database: config.get<string>('DB_NAME'),
           entities: [User],
-          synchronize: true
+          synchronize: true,
         }
       }
     }),
