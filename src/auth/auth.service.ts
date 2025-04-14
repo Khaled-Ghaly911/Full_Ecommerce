@@ -6,6 +6,8 @@ import { LoginUserDto } from './dto/inputs/login-user.input';
 import { ConfigService } from '@nestjs/config';
 import { SignupUserDto } from './dto/inputs/signup-user.input';
 import { JwtService } from '@nestjs/jwt';
+import { OtpService } from 'src/otp/otp.service';
+import { MailService } from 'libs/mailer/src';
 
 @Injectable()
 export class AuthService {
@@ -14,18 +16,39 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private configService: ConfigService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private otpService: OtpService,
+        private mailService: MailService,
     ) {}
 
     
-    async signUp(userDataDto: SignupUserDto): Promise<User> {
+    async signUp(
+        userDataDto: SignupUserDto
+    ): Promise<User> {
+        const existingUser = await this.userService.getUserByEmail(userDataDto.email);
+        
+        if (existingUser) {
+            throw new UnauthorizedException('Email already exists');
+        }
+        
+        const otp = await this.otpService.requestOTP(userDataDto.email, userDataDto.name);
+
         const { password } = userDataDto;
         const hashedPassword: string =  await bcrypt.hash(password, this.salt_rounds);
         const userWithHashedPassword = { ...userDataDto, password: hashedPassword}; 
+
         return this.userService.createUser(userWithHashedPassword);
     }
     
-    async logIn(userDataDto: LoginUserDto) {
+    async logIn(
+        userDataDto: LoginUserDto
+    ) {
+        const user: User | null = await this.userService.getUserByEmail(userDataDto.email);
+
+        if(!user) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
         const JWT_SECRET = this.configService.get<string>('JWT_ACCESS_SECRET');
         console.log('Loaded JWT_SECRET:', JWT_SECRET);
 
@@ -33,12 +56,6 @@ export class AuthService {
             throw new Error('JWT_SECRET is missing Check .env file.');
         }
 
-        const user: User = await this.userService.getUserByEmail(userDataDto.email);
-
-        if(!user) {
-            throw new UnauthorizedException('Invalid email or password');
-        }
-        
         const passIsOk: boolean = await bcrypt.compare(userDataDto.password, user.password);
         
         if(!passIsOk){
@@ -51,7 +68,8 @@ export class AuthService {
             id: user.id,
             name: user.name,
             admin: user.admin,
-            email: user.email
+            email: user.email,
+            verified: user.verified
         };
 
         const accessToken = this.jwtService.sign(payload, {
@@ -71,7 +89,9 @@ export class AuthService {
         return { accessToken, refreshToken, user };
     }
 
-    async verifyToken(token: string) {
+    async verifyToken(
+        token: string
+    ) {
         try {
           return await this.jwtService.verify(token, {
             secret: this.configService.get<string>('JWT_ACCESS_SECRET')
@@ -79,6 +99,88 @@ export class AuthService {
         } catch (err) {
           throw new UnauthorizedException('Invalid or expired token');
         }
+    }
+
+    async getResetPasswordOtp(
+        email: string,
+    ) {
+        const user: User | null = await this.userService.getUserByEmail(email);
+        if(!user) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
+        const otp = await this.otpService.requestOTP(email, user.name);
+        if(!otp) {      
+            throw new UnauthorizedException('Failed to send OTP');
+        }
+
+        return otp;
+    }
+
+    async resetPassword(
+        email: string, 
+        otp: string, 
+        newPassword: string
+    ) {
+        const user: User | null = await this.userService.getUserByEmail(email);
+        if(!user) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
+        const isVerified = await this.otpService.verifyOtp(email, otp);
+        if(!isVerified) {
+            throw new UnauthorizedException('Invalid OTP');
+        }
+
+        const hashedPassword: string =  await bcrypt.hash(newPassword, this.salt_rounds);
+        return this.userService.updateUser({
+            userId: String(user.id),
+            name: user.name,
+            password: hashedPassword,
+            admin: user.admin,
+            verified: user.verified,
+        });
+    }
+
+    async verifyUser(
+        email: string, 
+        otp: string
+    ) {
+        const user: User | null = await this.userService.getUserByEmail(email);
+        if(!user) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
+        const isVerified = await this.otpService.verifyOtp(email, otp);
+        if(!isVerified) {
+            throw new UnauthorizedException('Invalid OTP');
+        }
+
+        return this.userService.updateUser({
+            userId: String(user.id),
+            name: user.name,
+            password: user.password,
+            admin: user.admin,
+            verified: true,
+        });
+    }
+
+    async requestVerifyingOtp(
+        email: string
+    ) {
+        const user: User | null = await this.userService.getUserByEmail(email);
+
+        if(!user) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
+        const otp = await this.otpService.requestOTP(email, user.name);
+
+        if(!otp) {      
+            throw new UnauthorizedException('Failed to send OTP');
+        }
+
+        return otp;
     }
 }
 

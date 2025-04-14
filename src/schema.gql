@@ -8,10 +8,12 @@ type User {
   email: String!
   password: String!
   admin: Boolean
+  verified: Boolean
 }
 
 type LoginResponse {
   accessToken: String!
+  refreshToken: String!
   user: User!
 }
 
@@ -25,7 +27,12 @@ type Mutation {
   updateUser(updateUserData: UpdateUserInput!): User!
   deleteUser(deleteUserData: DeleteUserInput!): User!
   signUp(signupData: SignupUserDto!): User!
+  verifyUser(email: String!, otp: String!): User!
   login(loginUserData: LoginUserDto!): LoginResponse!
+  refreshToken: String!
+  requestResetPasswordOtp(email: String!): String!
+  resetPassword(email: String!, newPassword: String!, otp: String!): User!
+  requestOtpAgain(email: String!): String!
 }
 
 input CreateUserInput {
@@ -39,6 +46,7 @@ input UpdateUserInput {
   name: String!
   password: String!
   admin: Boolean!
+  verified: Boolean!
 }
 
 input DeleteUserInput {

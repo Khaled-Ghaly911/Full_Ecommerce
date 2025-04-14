@@ -18,4 +18,8 @@ export class UpdateUserInput {
     @Field()
     @IsOptional()
     admin: boolean;
+
+    @Field()
+    @IsOptional()
+    verified: boolean;
 }

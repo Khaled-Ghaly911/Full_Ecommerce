@@ -4,6 +4,8 @@ import { UserModule } from 'src/users/users.module';
 import { AuthResolver } from './auth.resolver';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { OtpModule } from 'src/otp/otp.module';
+import { MailModule } from 'libs/mailer/src';
 
 @Module({
   imports: [
@@ -17,7 +19,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           signOptions: {expiresIn: "15m"}
         }
       )
-    })
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ".env.development"
+    }),
+    OtpModule,
+    MailModule
   ], 
   providers: [AuthService, AuthResolver],
   

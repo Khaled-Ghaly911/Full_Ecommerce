@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -36,7 +34,7 @@ import { AuthModule } from './auth/auth.module';
       }
     }),
     UserModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [],
   providers: [],

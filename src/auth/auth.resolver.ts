@@ -7,70 +7,108 @@ import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { LoginResponse } from "./dto/outputs/login.response";
-import { UserService } from "src/users/users.service";
-import { Request } from "express";
+import { Request, Response } from "express";
 
 @Resolver(() => User)
 export class AuthResolver {
     constructor(
-      private authService: AuthService,
-      private jwtService: JwtService,
-      private configService: ConfigService,
-      private userService: UserService
+        private authService: AuthService,
+        private jwtService: JwtService,
+        private configService: ConfigService,
     ){}
-
+    
     @Mutation(() => User)
-    async signUp(@Args('signupData') signupData: SignupUserDto): Promise<User> {
+    async signUp(
+        @Args('signupData') signupData: SignupUserDto
+    ): Promise<User> {
         return this.authService.signUp(signupData);
     }
 
+    //to_do: verify a user
+    @Mutation(() => User)
+    async verifyUser(
+        @Args('email') email: string, 
+        @Args('otp') otp: string
+    ): Promise<User> {
+        return this.authService.verifyUser(email, otp);
+    }
+    
     @Mutation(() => LoginResponse)
-      async login(@Args('loginUserData') loginUserData: LoginUserDto, @Context() ctx: any) {
+    async login(
+        @Args('loginUserData') loginUserData: LoginUserDto, 
+        @Context() ctx: { res: Response }
+    ): Promise<LoginResponse> {
         const { res } = ctx
         const { accessToken, refreshToken, user } = await this.authService.logIn(loginUserData);
         res.cookie('refresh_token', refreshToken, {
           httpOnly: true,                     
-          secure: process.env.NODE_ENV === 'production', 
+          secure: false, 
           sameSite: 'lax',                    
           path: '/',                          
           maxAge: 7 * 24 * 60 * 60 * 1000,    
         });
         
-      
-      console.log(`access Token in resolver ${accessToken}`)
-      const payload = await this.authService.verifyToken(accessToken);
-      console.log(payload);
-      return { user, accessToken};
+        console.log(`access Token in resolver ${accessToken}`)
+        console.log(`refresh Token in resolver ${refreshToken}`)
+        console.log(`user in resolver ${user}`)
+        const payload = await this.authService.verifyToken(accessToken);
+        console.log(payload);
+        return { user, refreshToken, accessToken };
+    }
+    
+
+    @Mutation(() => String)
+    async refreshToken(
+        @Context() ctx: { req: Request }
+    ): Promise<string> {
+        const { req } = ctx;
+        const refreshToken = req.cookies['refresh_token'];
+        
+        if (!refreshToken) {
+            throw new UnauthorizedException('No refresh token');
+        }
+        
+        try {
+            const payload = this.jwtService.verify(refreshToken, {
+            secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+            });
+        
+            const newAccessToken = this.jwtService.sign(
+            { id: payload.id }, 
+            {
+                secret: this.configService.get<string>('JWT_ACCESS_SECRET'), 
+                expiresIn: '15m',
+            },
+            );
+        
+            return newAccessToken;
+        } catch (e) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
     }
 
-    
+    @Mutation(() => String)
+    async requestResetPasswordOtp(
+        @Args('email') email: string
+    ): Promise<string> {
+        return this.authService.getResetPasswordOtp(email);
+    }
+
+    @Mutation(() => User)
+    async resetPassword(
+        @Args('email') email: string, 
+        @Args('newPassword') newPassword: string, 
+        @Args('otp') otp: string
+    ): Promise<User> {
+        return this.authService.resetPassword(email, otp, newPassword);
+    }
+
+    @Mutation(() => String)
+    async requestOtpAgain(
+        @Args('email') email: string
+    ) {
+        return this.authService.requestVerifyingOtp(email);
+    }
   }
   
-  // @Mutation(() => String)
-  // async refreshToken(@Context() ctx: { req: Request }): Promise<string> {
-  //   const { req } = ctx;
-  //   const refreshToken = req.cookies['refresh_token'];
-  
-  //   if (!refreshToken) {
-  //     throw new UnauthorizedException('No refresh token');
-  //   }
-  
-  //   try {
-  //     const payload = this.jwtService.verify(refreshToken, {
-  //       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-  //     });
-  
-  //     const newAccessToken = this.jwtService.sign(
-  //       { id: payload.id }, // sign minimal payload (just user ID ideally)
-  //       {
-  //         secret: this.configService.get<string>('JWT_ACCESS_SECRET'), // if you're using different secrets
-  //         expiresIn: '15m',
-  //       },
-  //     );
-  
-  //     return newAccessToken;
-  //   } catch (e) {
-  //     throw new UnauthorizedException('Invalid refresh token');
-  //   }
-  // }
   

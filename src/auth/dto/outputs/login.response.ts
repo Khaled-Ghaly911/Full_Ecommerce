@@ -5,6 +5,9 @@ import { User } from 'src/users/models/user';
 export class LoginResponse {
   @Field()
   accessToken: string;
+  
+  @Field()
+  refreshToken: string;
 
   @Field(() => User)
   user: User;

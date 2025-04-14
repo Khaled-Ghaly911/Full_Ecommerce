@@ -25,4 +25,9 @@ export class User {
     @IsOptional()
     @Field({defaultValue: false, nullable: true})
     admin: boolean;
+
+    @Column({default: false})
+    @IsOptional()
+    @Field({defaultValue: false, nullable: true})
+    verified: boolean;
 }

@@ -49,13 +49,8 @@ export class UserService {
         return user;
     }
 
-    async getUserByEmail(email: string): Promise<User> {
+    async getUserByEmail(email: string): Promise<User | null> {
         let user: User | null = await this.userRepo.findOneBy({email});
-        
-        if(!user) {
-            throw new NotFoundException('user with this email is not found.');
-        }
-
         return user;
     }
 
