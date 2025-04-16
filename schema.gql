@@ -17,9 +17,22 @@ type LoginResponse {
   user: User!
 }
 
+type Product {
+  id: Int!
+  name: String!
+  description: String!
+  price: Int!
+  stock: Int!
+  color: String
+  size: String
+  image: String!
+}
+
 type Query {
   getUser(userId: Float!): User
   getUsers: [User!]
+  getAllProducts: [Product!]!
+  getProductById(id: Float!): Product!
 }
 
 type Mutation {
@@ -33,6 +46,10 @@ type Mutation {
   requestResetPasswordOtp(email: String!): String!
   resetPassword(email: String!, newPassword: String!, otp: String!): User!
   requestOtpAgain(email: String!): String!
+  createProduct(productData: CreateProductInput!): Product!
+  updateProduct(id: Float!, updateData: UpdateProductInput!): Product!
+  deleteProduct(id: Float!): Product!
+  decreaseStock(id: Float!): Product!
 }
 
 input CreateUserInput {
@@ -62,4 +79,24 @@ input SignupUserDto {
 input LoginUserDto {
   email: String!
   password: String!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  stock: Float!
+  color: String
+  size: String
+  image: String!
+}
+
+input UpdateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  stock: Float!
+  color: String
+  size: String
+  image: String!
 }

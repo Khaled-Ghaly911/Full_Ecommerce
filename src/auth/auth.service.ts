@@ -8,6 +8,7 @@ import { SignupUserDto } from './dto/inputs/signup-user.input';
 import { JwtService } from '@nestjs/jwt';
 import { OtpService } from 'src/otp/otp.service';
 import { MailService } from 'libs/mailer/src';
+import { emitWarning } from 'process';
 
 @Injectable()
 export class AuthService {
@@ -66,14 +67,15 @@ export class AuthService {
         
         const payload = {
             id: user.id,
-            name: user.name,
-            admin: user.admin,
             email: user.email,
-            verified: user.verified
+            admin: user.admin,
+            verified: user.verified,
+            name: user.name
         };
 
         const accessToken = this.jwtService.sign(payload, {
-            secret: this.configService.get<string>('JWT_ACCESS_SECRET')
+            secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+            expiresIn: '1h',
         });
 
         const refreshToken = this.jwtService.sign(

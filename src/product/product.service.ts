@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from './models/product'
 import { Repository } from "typeorm";
+import { CreateProductInput } from "./dto/inputs/create-product.input";
 
 @Injectable()
 export class ProductService {
@@ -10,7 +11,7 @@ export class ProductService {
         private productRepo: Repository<Product>
     ) {}
 
-    async createProduct(productData: Product): Promise<Product> {
+    async createProduct(productData: CreateProductInput): Promise<Product> {
         const product: Product = this.productRepo.create(productData);
         return this.productRepo.save(product);
     }
@@ -50,4 +51,21 @@ export class ProductService {
 
         return product;
     }
+
+    async decreaseStock(id: number): Promise<Product> {
+        const product: Product = await this.getProductById(id);
+        
+        if(!product) {
+            throw new NotFoundException('product not found');
+        }
+
+        if(product.stock === 0) {
+            throw new NotFoundException('product is out of stock! 🫗');
+        }
+
+        product.stock -= 1;
+
+        return this.productRepo.save(product);
+    }
+
 }
