@@ -8,30 +8,31 @@ export class AdminGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-) {}
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const ctx = GqlExecutionContext.create(context).getContext();
-    
-    const tokenFromCookies = ctx.req?.cookies?.refresh_token;
-    const token = tokenFromCookies;
 
-    if (!token) {
-      throw new UnauthorizedException('No authentication token found');
+    const authHeader = ctx.req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('No token or malformed Authorization header');
     }
 
-    try {
-      const user = this.jwtService.verify(token, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      });
-      ctx.user = user;
+    const token = authHeader.split(' ')[1];
 
-      if (!user.admin) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      });
+
+      ctx.user = payload;
+
+      if (!payload.admin) {
         throw new ForbiddenException('You do not have admin permissions');
       }
 
       return true;
-    } catch (error) {
+    } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }

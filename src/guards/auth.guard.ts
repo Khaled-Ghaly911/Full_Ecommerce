@@ -8,18 +8,19 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const ctx = GqlExecutionContext.create(context).getContext();
-    
-    const tokenFromCookies = ctx.req.cookies?.refresh_token;
-    const token = tokenFromCookies;
 
-    if (!token) {
-      throw new UnauthorizedException('No authentication token found');
+    const authHeader = ctx.req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('No token or malformed Authorization header');
     }
 
+    const token = authHeader.split(' ')[1];
+
     try {
-      ctx.user = this.authService.verifyToken(token);
+      const payload = this.authService.verifyToken(token);
+      ctx.user = payload; 
       return true;
-    } catch (error) {
+    } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
