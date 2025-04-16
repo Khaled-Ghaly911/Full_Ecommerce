@@ -1,6 +1,6 @@
-# compiled output
-/dist
+# Node modules and build output
 /node_modules
+/dist
 /build
 
 # Logs
@@ -12,10 +12,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# OS files
 .DS_Store
 
-# Tests
+# Test coverage and reports
 /coverage
 /.nyc_output
 
@@ -28,22 +28,24 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
+# dotenv files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
 .env.local
 .env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 
-# temp directory
+# Temp folders
 .temp
 .tmp
 

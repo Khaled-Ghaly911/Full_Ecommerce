@@ -6,6 +6,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './users/users.module';
 import { User } from './users/models/user';
 import { AuthModule } from './auth/auth.module';
+import { Product } from './product/models/product';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: `src/schema.gql`,
+      autoSchemaFile: `./schema.gql`,
       context: (({ req, res })=>({ req, res })),
     }),
     TypeOrmModule.forRootAsync({
@@ -28,13 +30,14 @@ import { AuthModule } from './auth/auth.module';
           username: config.get<string>('DB_USER'),
           password: String(config.get<string>('DB_PASSWORD')),
           database: config.get<string>('DB_NAME'),
-          entities: [User],
+          entities: [User, Product],
           synchronize: true,
         }
       }
     }),
     UserModule,
     AuthModule,
+    ProductModule
   ],
   controllers: [],
   providers: [],

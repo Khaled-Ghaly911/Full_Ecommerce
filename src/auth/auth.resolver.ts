@@ -38,15 +38,7 @@ export class AuthResolver {
         @Args('loginUserData') loginUserData: LoginUserDto, 
         @Context() ctx: { res: Response }
     ): Promise<LoginResponse> {
-        const { res } = ctx
         const { accessToken, refreshToken, user } = await this.authService.logIn(loginUserData);
-        res.cookie('refresh_token', refreshToken, {
-          httpOnly: true,                     
-          secure: false, 
-          sameSite: 'lax',                    
-          path: '/',                          
-          maxAge: 7 * 24 * 60 * 60 * 1000,    
-        });
         
         console.log(`access Token in resolver ${accessToken}`)
         console.log(`refresh Token in resolver ${refreshToken}`)
@@ -62,7 +54,8 @@ export class AuthResolver {
         @Context() ctx: { req: Request }
     ): Promise<string> {
         const { req } = ctx;
-        const refreshToken = req.cookies['refresh_token'];
+        const refreshToken = req.headers['authorization']?.split(' ')[1];
+        console.log(`refresh token in resolver ${refreshToken}`)
         
         if (!refreshToken) {
             throw new UnauthorizedException('No refresh token');
@@ -74,7 +67,7 @@ export class AuthResolver {
             });
         
             const newAccessToken = this.jwtService.sign(
-            { id: payload.id }, 
+            { payload }, 
             {
                 secret: this.configService.get<string>('JWT_ACCESS_SECRET'), 
                 expiresIn: '15m',
