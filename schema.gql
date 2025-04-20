@@ -28,11 +28,26 @@ type Product {
   image: String!
 }
 
+type getProductsOutput {
+  statusCode: String!
+  products: [Product!]!
+  total: Int!
+  currentPage: Int!
+  nextPage: Int
+  prevPage: Int
+  lastPage: Int!
+}
+
 type Query {
   getUser(userId: Float!): User
   getUsers: [User!]
-  getAllProducts: [Product!]!
+  getAllProducts(paginationDto: PaginationDto!): getProductsOutput!
   getProductById(id: Float!): Product!
+}
+
+input PaginationDto {
+  limit: Int!
+  page: Int!
 }
 
 type Mutation {

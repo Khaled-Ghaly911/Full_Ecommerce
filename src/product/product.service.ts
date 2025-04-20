@@ -3,6 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from './models/product'
 import { Repository } from "typeorm";
 import { CreateProductInput } from "./dto/inputs/create-product.input";
+import { PaginationDto } from "./dto/inputs/pagination.input";
+import { getProductsOutput } from "./dto/outputs/get-products.output";
 
 @Injectable()
 export class ProductService {
@@ -16,14 +18,34 @@ export class ProductService {
         return this.productRepo.save(product);
     }
 
-    async getAllProducts(): Promise<Product[]>{
-        const products: Product[] = await this.productRepo.find();
+    async getAllProducts(paginationDto: PaginationDto): Promise<getProductsOutput>{
+        const { page = 1, limit = 10 } = paginationDto;
+        const skip = (page - 1) * limit;
 
+        const [products, total] = await this.productRepo.findAndCount({
+            skip,
+            take: limit,
+        });
+
+        if (products.length === 0) {
+            throw new NotFoundException('No products found');
+        }
+
+        const lastPage = Math.ceil(total / limit);
+        
         if(products.length === 0) {
             throw new NotFoundException('No products found');
         }
 
-        return products;
+        return {
+            statusCode: 'success',
+            products,
+            total,
+            currentPage: page,
+            nextPage: page < lastPage ? page + 1 : null,
+            prevPage: page > 1 ? page - 1 : null,
+            lastPage: lastPage
+        };
     }
 
     async getProductById(id: number): Promise<Product> {

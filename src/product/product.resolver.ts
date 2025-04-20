@@ -5,6 +5,8 @@ import { CreateProductInput } from './dto/inputs/create-product.input';
 import { UpdateProductInput } from './dto/inputs/update-product.input';
 import { UseGuards } from '@nestjs/common';
 import { AdminGuard } from 'src/guards/admin.guard';
+import { getProductsOutput } from './dto/outputs/get-products.output';
+import { PaginationDto } from './dto/inputs/pagination.input';
 
 
 @Resolver(() => Product)
@@ -14,9 +16,9 @@ export class ProductResolver {
     ){}
 
     
-    @Query(() => [Product])
-    async getAllProducts(): Promise<Product[]> {
-        return this.productService.getAllProducts();
+    @Query(() => getProductsOutput)
+    async getAllProducts(@Args('paginationDto') paginationDto: PaginationDto): Promise<getProductsOutput> {
+        return this.productService.getAllProducts(paginationDto);
     }
 
     @Query(() => Product)
