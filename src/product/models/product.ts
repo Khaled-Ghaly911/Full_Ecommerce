@@ -1,9 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
-import { IsOptional, IsUrl } from "class-validator";
-import { IsString } from "class-validator";
-import { IsNumber } from "class-validator";
-import { IsNotEmpty } from "class-validator";
+import { 
+    IsString, 
+    IsNumber, 
+    IsNotEmpty, 
+    IsOptional, 
+    IsUrl 
+} from "class-validator";
+import { Category } from "src/category/models/category";
 
 @Entity({name: 'product'})
 @ObjectType()
@@ -53,4 +57,12 @@ export class Product {
     @IsNotEmpty()
     @Field()
     image: string;
+
+    @ManyToOne(() => Category, (category) => category.product, { onDelete: 'CASCADE'})
+    @Field(() => Category, { nullable: true })
+    category: Category;
+
+    @Column({nullable: true})
+    @Field(() => Int, { nullable: true})
+    discount: number;
 }

@@ -1,4 +1,4 @@
-import { InputType, Field } from "@nestjs/graphql";
+import { InputType, Field, Int } from "@nestjs/graphql";
 import { IsString, IsOptional, IsNumber, IsUrl  } from 'class-validator';
 
 @InputType()
@@ -37,4 +37,14 @@ export class UpdateProductInput {
     @IsOptional()
     @Field()
     image?: string;
+
+    @IsNumber()
+    @IsOptional()
+    @Field(() => Int, { nullable: true })
+    discound?: number;
+
+    @IsNumber()
+    @IsOptional()
+    @Field(() => Int, { nullable: true })
+    categoryId?: number;
 }

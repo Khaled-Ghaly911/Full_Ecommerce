@@ -8,6 +8,8 @@ import { User } from './users/models/user';
 import { AuthModule } from './auth/auth.module';
 import { Product } from './product/models/product';
 import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
+import { Category } from './category/models/category';
 
 @Module({
   imports: [
@@ -30,14 +32,15 @@ import { ProductModule } from './product/product.module';
           username: config.get<string>('DB_USER'),
           password: String(config.get<string>('DB_PASSWORD')),
           database: config.get<string>('DB_NAME'),
-          entities: [User, Product],
+          entities: [User, Product, Category],
           synchronize: true,
         }
       }
     }),
     UserModule,
     AuthModule,
-    ProductModule
+    ProductModule,
+    CategoryModule
   ],
   controllers: [],
   providers: [],
