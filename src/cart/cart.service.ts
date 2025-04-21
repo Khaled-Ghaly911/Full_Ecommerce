@@ -89,7 +89,8 @@ export class CartService {
 
     async clearCart(userId: number): Promise<Cart> {
         const cart: Cart = await this.getUserCart(userId);
+        await this.cartItemRepo.delete({ cart: { id: cart.id}})
         cart.cartItems = [];
-        return this.cartRepo.save(cart);
+        return cart;
     }
 }
