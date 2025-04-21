@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
+import { Cart } from "src/cart/models/cart";
 
 @Entity({ name: 'user'})
 @ObjectType()
@@ -30,4 +31,8 @@ export class User {
     @IsOptional()
     @Field({defaultValue: false, nullable: true})
     verified: boolean;
+
+    @OneToOne(() => Cart, (cart) => cart.user)
+    @Field(() => Cart)
+    cart: Cart;
 }

@@ -17,7 +17,9 @@ export class ProductResolver {
 
     
     @Query(() => getProductsOutput)
-    async getAllProducts(@Args('paginationDto') paginationDto: PaginationDto): Promise<getProductsOutput> {
+    async getAllProducts(
+        @Args('paginationDto') paginationDto: PaginationDto
+    ): Promise<getProductsOutput> {
         return this.productService.getAllProducts(paginationDto);
     }
 

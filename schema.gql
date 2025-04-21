@@ -2,21 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: Int!
-  name: String!
-  email: String!
-  password: String!
-  admin: Boolean
-  verified: Boolean
-}
-
-type LoginResponse {
-  accessToken: String!
-  refreshToken: String!
-  user: User!
-}
-
 type Category {
   id: Int!
   name: String!
@@ -34,6 +19,34 @@ type Product {
   image: String!
   category: Category
   discount: Int
+}
+
+type CartItem {
+  id: Int!
+  quantity: Int!
+  cart: Cart!
+}
+
+type Cart {
+  id: Int!
+  user: User!
+  cartItems: [CartItem!]!
+}
+
+type User {
+  id: Int!
+  name: String!
+  email: String!
+  password: String!
+  admin: Boolean
+  verified: Boolean
+  cart: Cart!
+}
+
+type LoginResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
 }
 
 type getProductsOutput {

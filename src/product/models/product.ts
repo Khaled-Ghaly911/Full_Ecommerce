@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
 import { 
     IsString, 
@@ -8,6 +8,7 @@ import {
     IsUrl 
 } from "class-validator";
 import { Category } from "src/category/models/category";
+import { CartItem } from "src/cart/models/cart_item";
 
 @Entity({name: 'product'})
 @ObjectType()

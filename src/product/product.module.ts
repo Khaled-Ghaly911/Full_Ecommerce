@@ -5,7 +5,6 @@ import { UserModule } from "src/users/users.module";
 import { ProductService } from "./product.service";
 import { ProductResolver } from "./product.resolver";
 import { JwtModule } from "@nestjs/jwt";
-import { Category } from "src/category/models/category";
 import { CategoryModule } from "src/category/category.module";
 
 @Module({

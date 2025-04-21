@@ -10,6 +10,9 @@ import { Product } from './product/models/product';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { Category } from './category/models/category';
+import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/models/cart';
+import { CartItem } from './cart/models/cart_item';
 
 @Module({
   imports: [
@@ -32,7 +35,7 @@ import { Category } from './category/models/category';
           username: config.get<string>('DB_USER'),
           password: String(config.get<string>('DB_PASSWORD')),
           database: config.get<string>('DB_NAME'),
-          entities: [User, Product, Category],
+          entities: [User, Product, Category, Cart, CartItem],
           synchronize: true,
         }
       }
@@ -40,7 +43,8 @@ import { Category } from './category/models/category';
     UserModule,
     AuthModule,
     ProductModule,
-    CategoryModule
+    CategoryModule,
+    CartModule
   ],
   controllers: [],
   providers: [],
