@@ -28,6 +28,7 @@ import { MailModule } from 'libs/mailer/src';
     MailModule
   ], 
   providers: [AuthService, AuthResolver],
+  exports: [AuthService, AuthResolver]
   
 })
 export class AuthModule {}

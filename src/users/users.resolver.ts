@@ -8,7 +8,6 @@ import { DeleteUserInput } from "./dto/inputs/delete-user.input";
 import { UseGuards } from "@nestjs/common";
 import { AdminGuard } from "src/guards/admin.guard";
 
-@UseGuards(AdminGuard)
 @Resolver(() => User)
 export class UserResolver {
     constructor(private userService: UserService){}

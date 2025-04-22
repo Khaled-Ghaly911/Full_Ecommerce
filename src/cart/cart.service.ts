@@ -27,22 +27,35 @@ export class CartService {
         });
 
         if(!cart) {
-            throw new NotFoundException(`Cart not found for user with id ${userId}`);
+            return await this.cartRepo.create({
+                user: { id: userId},
+                cartItems: []
+            });
         }
 
         return cart;
     }
 
     async addItemToCart(userId: number, productId: number, quantity: number): Promise<Cart> {
-        const cart: Cart = await this.getUserCart(userId);
-
-        // create cart item.
-        const cartItem: CartItem | null = await this.createCartItem(quantity, productId, cart.id);
-        
-        cart.cartItems.push(cartItem);
-
-        return this.cartRepo.save(cart);
+        let cart = await this.cartRepo.findOneBy( { user: { id: userId }});
+    
+        if (!cart) {
+            cart =  this.cartRepo.create({ user: { id: userId }, cartItems: [] });
+        }
+    
+        const existingItem = cart.cartItems.find((item) => item.product.id === productId);
+    
+        if (existingItem) {
+            existingItem.quantity += quantity;
+            await this.cartItemRepo.save(existingItem);
+        } else {
+            const newItem = await this.createCartItem(quantity, productId, cart.id);
+            cart.cartItems.push(newItem);
+        }
+    
+        return this.cartRepo.save(cart); 
     }
+    
 
     async createCartItem(
         quantity: number, 

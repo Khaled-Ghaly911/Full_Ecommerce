@@ -1,7 +1,12 @@
-import { Resolver, Query, Mutation } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { CartService } from "./cart.service";
 import { Cart } from "./models/cart";
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from "src/guards/auth.guard";
+import { AddItemToCartInput } from "./dto/inputs/add-item-cart";
+import { RemoveItemFromCartInput } from "./dto/inputs/remove-item-from-cart";
 
+@UseGuards(AuthGuard)
 @Resolver(() => Cart)
 export class CartResolver {
     constructor(
@@ -9,17 +14,24 @@ export class CartResolver {
     ) {}
 
     @Query(() => Cart)
-    async getUserCart(userId: number): Promise<Cart> {
+    async getUserCart(@Args('userId') userId: number): Promise<Cart> {
         return this.cartService.getUserCart(userId);
     }
 
     @Mutation(() => Cart)
-    async addItemToCart(userId: number, productId: number, quantity: number): Promise<Cart>{
-        return this.cartService.addItemToCart(userId, productId, quantity);
+    async addItemToCart(
+        @Args('addItemDto') addItemDto: AddItemToCartInput
+    ): Promise<Cart>{
+        return this.cartService.addItemToCart(addItemDto.userId, addItemDto.productId, addItemDto.quantity);
     }
 
     @Mutation(() => Cart)
-    async removeItemFromCart(userId: number, cartItemId: number): Promise<Cart> {
-        return this.cartService.removeItemFromCart(userId, cartItemId);
+    async removeItemFromCart(@Args('removeItemDto') removeItemDto: RemoveItemFromCartInput): Promise<Cart> {
+        return this.cartService.removeItemFromCart(removeItemDto.userId, removeItemDto.cartItemId);
     }    
+
+    @Mutation(() => Cart)
+    async clearCart(@Args('userId') userId: number): Promise<Cart> {
+        return this.cartService.clearCart(userId);
+    }
 }

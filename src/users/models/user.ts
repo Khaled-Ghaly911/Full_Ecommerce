@@ -32,7 +32,7 @@ export class User {
     @Field({defaultValue: false, nullable: true})
     verified: boolean;
 
-    @OneToOne(() => Cart, (cart) => cart.user)
+    @OneToOne(() => Cart, (cart) => cart.user, { nullable: true })
     @Field(() => Cart)
     cart: Cart;
 }

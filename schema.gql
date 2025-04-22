@@ -24,7 +24,8 @@ type Product {
 type CartItem {
   id: Int!
   quantity: Int!
-  cart: Cart!
+  product: Product!
+  cart: Cart
 }
 
 type Cart {
@@ -67,6 +68,7 @@ type Query {
   getAllCategories: [Category!]!
   getCategoryById(id: Float!): Category!
   getCategoryByName(name: String!): Category!
+  getUserCart(userId: Float!): Cart!
 }
 
 input PaginationDto {
@@ -92,6 +94,9 @@ type Mutation {
   createCategory(createCategoryData: CreateCategoryInput!): Category!
   updateCategory(id: Float!, updateCategoryData: CreateCategoryInput!): Category!
   deleteCategory(id: Float!): Category!
+  addItemToCart(addItemDto: AddItemToCartInput!): Cart!
+  removeItemFromCart(removeItemDto: RemoveItemFromCartInput!): Cart!
+  clearCart(userId: Float!): Cart!
 }
 
 input CreateUserInput {
@@ -149,4 +154,15 @@ input UpdateProductInput {
 
 input CreateCategoryInput {
   name: String!
+}
+
+input AddItemToCartInput {
+  userId: Int!
+  productId: Int!
+  quantity: Int!
+}
+
+input RemoveItemFromCartInput {
+  userId: Int!
+  cartItemId: Int!
 }

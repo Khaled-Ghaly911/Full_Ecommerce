@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typ
 import { Cart } from './cart';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/product/models/product';
+import { IsOptional } from 'class-validator';
 
 @Entity( { name: 'cart_item'})
 @ObjectType()
@@ -15,9 +16,11 @@ export class CartItem {
     quantity: number;
 
     @ManyToOne(() => Product, { eager: true})
+    @Field(() => Product)
     product: Product;
 
     @ManyToOne(() => Cart, { onDelete: 'CASCADE' })
-    @Field(() => Cart)
-    cart: Cart;
+    @IsOptional()
+    @Field(() => Cart, { nullable: true })
+    cart?: Cart;
 }
