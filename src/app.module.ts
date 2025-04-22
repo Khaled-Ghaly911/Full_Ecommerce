@@ -13,6 +13,7 @@ import { Category } from './category/models/category';
 import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/models/cart';
 import { CartItem } from './cart/models/cart_item';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { CartItem } from './cart/models/cart_item';
     AuthModule,
     ProductModule,
     CategoryModule,
-    CartModule
+    CartModule,
+    StripeModule
   ],
   controllers: [],
   providers: [],
