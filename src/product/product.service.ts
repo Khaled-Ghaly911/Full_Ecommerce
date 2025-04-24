@@ -74,7 +74,7 @@ export class ProductService {
         return product;
     }
 
-    async decreaseStock(id: number): Promise<Product> {
+    async decreaseStock(id: number, quantity: number): Promise<Product> {
         const product: Product = await this.getProductById(id);
         
         if(!product) {
@@ -85,7 +85,12 @@ export class ProductService {
             throw new NotFoundException('product is out of stock! 🫗');
         }
 
-        product.stock -= 1;
+        if(product.stock < quantity) {
+            throw new NotFoundException('product is out of stock! 🫗');
+        }
+
+        product.stock -= quantity;
+        console.log(`product stock decreased by ${quantity}`);
 
         return this.productRepo.save(product);
     }

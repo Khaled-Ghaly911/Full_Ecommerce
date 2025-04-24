@@ -90,13 +90,14 @@ type Mutation {
   createProduct(productData: CreateProductInput!): Product!
   updateProduct(id: Float!, updateData: UpdateProductInput!): Product!
   deleteProduct(id: Float!): Product!
-  decreaseStock(id: Float!): Product!
+  decreaseStock(id: Float!, quantity: Float!): Product!
   createCategory(createCategoryData: CreateCategoryInput!): Category!
   updateCategory(id: Float!, updateCategoryData: CreateCategoryInput!): Category!
   deleteCategory(id: Float!): Category!
   addItemToCart(addItemDto: AddItemToCartInput!): Cart!
   removeItemFromCart(removeItemDto: RemoveItemFromCartInput!): Cart!
   clearCart(userId: Float!): Cart!
+  checkout: String!
 }
 
 input CreateUserInput {
@@ -141,13 +142,13 @@ input CreateProductInput {
 }
 
 input UpdateProductInput {
-  name: String!
-  description: String!
-  price: Float!
-  stock: Float!
+  name: String
+  description: String
+  price: Int
+  stock: Int
   color: String
   size: String
-  image: String!
+  image: String
   discound: Int
   categoryId: Int
 }

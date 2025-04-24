@@ -53,7 +53,7 @@ export class ProductResolver {
 
     @UseGuards(AdminGuard)
     @Mutation(() => Product) 
-    async decreaseStock(@Args('id') id: number): Promise<Product> {
-        return this.productService.decreaseStock(id);
+    async decreaseStock(@Args('id') id: number, @Args('quantity') quantity: number): Promise<Product> {
+        return this.productService.decreaseStock(id, quantity);
     }
 }

@@ -1,4 +1,3 @@
-// src/payment/payment.resolver.ts
 import { Resolver, Mutation } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decoretors/current-user';
@@ -6,12 +5,14 @@ import { StripeService } from '../stripe/stripe.service';
 import { CartService } from '../cart/cart.service';
 import { User } from 'src/users/models/user';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { ProductService } from 'src/product/product.service';
 
-@Resolver()
+@Resolver(() => String)
 export class PaymentResolver {
   constructor(
     private readonly stripeService: StripeService,
     private readonly cartService: CartService,
+    private readonly productService: ProductService
   ) {}
 
   @Mutation(() => String)
@@ -27,6 +28,12 @@ export class PaymentResolver {
       user.email,
     );
 
+    const cartItemsUpdated = cart.cartItems.map(async (item) => {
+        const updatedData = await this.productService.decreaseStock(item.product.id, item.quantity);
+    })
+
+    await this.cartService.clearCart(cart.id);
+    console.log('checkout Done');
     return session.url;
   }
 }

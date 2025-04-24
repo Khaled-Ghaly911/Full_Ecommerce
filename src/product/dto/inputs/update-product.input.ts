@@ -5,27 +5,27 @@ import { IsString, IsOptional, IsNumber, IsUrl  } from 'class-validator';
 export class UpdateProductInput {
     @IsString()
     @IsOptional()
-    @Field()
+    @Field({ nullable: true })
     name?: string;
 
     @IsString()
     @IsOptional()
-    @Field()
+    @Field({ nullable: true })
     description?: string;
 
     @IsNumber()
     @IsOptional()
-    @Field(() => Number)
+    @Field(() => Int, { nullable: true })
     price?: number;
 
     @IsNumber()
     @IsOptional()
-    @Field(() => Number)
+    @Field(() => Int, { nullable: true })
     stock?: number;
 
     @IsString()
     @IsOptional()
-    @Field({ nullable: true})
+    @Field({ nullable: true })
     color?: string;
 
     @IsString()
@@ -35,7 +35,7 @@ export class UpdateProductInput {
 
     @IsUrl()
     @IsOptional()
-    @Field()
+    @Field({ nullable: true })
     image?: string;
 
     @IsNumber()
