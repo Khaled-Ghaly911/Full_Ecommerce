@@ -54,23 +54,26 @@ export class AuthResolver {
         @Context() ctx: { req: Request }
     ): Promise<string> {
         const { req } = ctx;
-        const refreshToken = req.headers['authorization']?.split(' ')[1];
-        console.log(`refresh token in resolver ${refreshToken}`)
+        const refreshHeader = req.headers['refresh_token'];
         
-        if (!refreshToken) {
-            throw new UnauthorizedException('No refresh token');
+        if (!refreshHeader || Array.isArray(refreshHeader)) {
+          throw new UnauthorizedException('Missing or malformed refresh token header');
         }
         
+        const refreshToken = refreshHeader.split(' ')[1];
+        console.log(`refresh token in resolver ${refreshToken}`);
+
         try {
             const payload = this.jwtService.verify(refreshToken, {
             secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
             });
         
+
             const newAccessToken = this.jwtService.sign(
-            { payload }, 
+            payload, 
             {
                 secret: this.configService.get<string>('JWT_ACCESS_SECRET'), 
-                expiresIn: '15m',
+                expiresIn: '2h',
             },
             );
         

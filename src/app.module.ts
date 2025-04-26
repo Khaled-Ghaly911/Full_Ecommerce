@@ -14,6 +14,8 @@ import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/models/cart';
 import { CartItem } from './cart/models/cart_item';
 import { StripeModule } from './stripe/stripe.module';
+import { ShippingAddressModule } from './shipping-address/shipping-address.module';
+import { ShippingAddress } from './shipping-address/models/address';
 
 @Module({
   imports: [
@@ -36,7 +38,14 @@ import { StripeModule } from './stripe/stripe.module';
           username: config.get<string>('DB_USER'),
           password: String(config.get<string>('DB_PASSWORD')),
           database: config.get<string>('DB_NAME'),
-          entities: [User, Product, Category, Cart, CartItem],
+          entities: [
+            User, 
+            Product, 
+            Category, 
+            Cart, 
+            CartItem, 
+            ShippingAddress
+          ],
           synchronize: true,
         }
       }
@@ -46,7 +55,8 @@ import { StripeModule } from './stripe/stripe.module';
     ProductModule,
     CategoryModule,
     CartModule,
-    StripeModule
+    StripeModule,
+    ShippingAddressModule
   ],
   controllers: [],
   providers: [],

@@ -1,7 +1,8 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 import { Cart } from "src/cart/models/cart";
+import { ShippingAddress } from "src/shipping-address/models/address";
 
 @Entity({ name: 'user'})
 @ObjectType()
@@ -35,4 +36,8 @@ export class User {
     @OneToOne(() => Cart, (cart) => cart.user, { nullable: true })
     @Field(() => Cart)
     cart: Cart;
+
+    @OneToMany(() => ShippingAddress, (address) => address.user)
+    @Field(() => [ShippingAddress])
+    addresses: ShippingAddress[];
 }

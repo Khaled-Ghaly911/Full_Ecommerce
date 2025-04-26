@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typ
 import { Cart } from './cart';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/product/models/product';
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 @Entity( { name: 'cart_item'})
 @ObjectType()
@@ -23,4 +23,8 @@ export class CartItem {
     @IsOptional()
     @Field(() => Cart, { nullable: true })
     cart?: Cart;
+
+    @Column()
+    @IsNotEmpty()
+    cartId: number;
 }

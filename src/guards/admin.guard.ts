@@ -20,7 +20,7 @@ export class AdminGuard implements CanActivate {
     const req: Request = ctx.getContext().req;
     const authHeader = req.headers['authorization'];
 
-    if (!authHeader?.startsWith('Bearer ')) {
+    if (!authHeader || Array.isArray(authHeader) || !authHeader.startsWith('Bearer')) {
       throw new UnauthorizedException('Missing or malformed Authorization header');
     }
 

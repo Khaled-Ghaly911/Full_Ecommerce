@@ -18,6 +18,7 @@ type Product {
   size: String
   image: String!
   category: Category
+  categoryId: Int!
   discount: Int
 }
 
@@ -34,6 +35,18 @@ type Cart {
   cartItems: [CartItem!]!
 }
 
+type ShippingAddress {
+  id: Int!
+  address: String!
+  city: String!
+  state: String!
+  country: String!
+  postalCode: String!
+  phoneNumber: String!
+  user: User!
+  userId: Int!
+}
+
 type User {
   id: Int!
   name: String!
@@ -42,6 +55,7 @@ type User {
   admin: Boolean
   verified: Boolean
   cart: Cart!
+  addresses: [ShippingAddress!]!
 }
 
 type LoginResponse {
@@ -69,6 +83,8 @@ type Query {
   getCategoryById(id: Float!): Category!
   getCategoryByName(name: String!): Category!
   getUserCart(userId: Float!): Cart!
+  getAddressByUserId(userId: Float!): [ShippingAddress!]!
+  getAllAddresses: [ShippingAddress!]!
 }
 
 input PaginationDto {
@@ -98,6 +114,9 @@ type Mutation {
   removeItemFromCart(removeItemDto: RemoveItemFromCartInput!): Cart!
   clearCart(userId: Float!): Cart!
   checkout: String!
+  createShippingAddress(shippingAddressDto: ShippingAddressInput!): ShippingAddress!
+  updateAddress(updateAddressDto: UpdateAddressInput!): ShippingAddress!
+  deleteAddressById(addressId: Float!): ShippingAddress!
 }
 
 input CreateUserInput {
@@ -137,7 +156,7 @@ input CreateProductInput {
   color: String
   size: String
   image: String!
-  discound: Int
+  discount: Int
   categoryId: Int!
 }
 
@@ -161,9 +180,30 @@ input AddItemToCartInput {
   userId: Int!
   productId: Int!
   quantity: Int!
+  cartId: Int!
 }
 
 input RemoveItemFromCartInput {
   userId: Int!
   cartItemId: Int!
+}
+
+input ShippingAddressInput {
+  address: String!
+  city: String!
+  state: String!
+  country: String!
+  postalCode: String!
+  phoneNumber: String!
+  userId: Int!
+}
+
+input UpdateAddressInput {
+  id: Float!
+  address: String!
+  city: String!
+  state: String!
+  country: String!
+  postalCode: String!
+  phoneNumber: String!
 }

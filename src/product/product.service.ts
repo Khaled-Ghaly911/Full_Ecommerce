@@ -5,16 +5,20 @@ import { Repository } from "typeorm";
 import { CreateProductInput } from "./dto/inputs/create-product.input";
 import { PaginationDto } from "./dto/inputs/pagination.input";
 import { getProductsOutput } from "./dto/outputs/get-products.output";
+import { CategoryService } from "src/category/category.service";
+import { Category } from "src/category/models/category";
 
 @Injectable()
 export class ProductService {
     constructor(
         @InjectRepository(Product) 
-        private productRepo: Repository<Product>
+        private productRepo: Repository<Product>,
+        private categoryService: CategoryService
     ) {}
 
     async createProduct(productData: CreateProductInput): Promise<Product> {
-        const product: Product = this.productRepo.create(productData);
+        const category: Category = await this.categoryService.getCategoryById(productData.categoryId);
+        const product: Product = this.productRepo.create({ ...productData, category });
         return this.productRepo.save(product);
     }
 

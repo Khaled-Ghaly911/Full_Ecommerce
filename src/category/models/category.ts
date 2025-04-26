@@ -16,7 +16,7 @@ export class Category {
     @IsNotEmpty()
     name: string;
 
-    @OneToMany(() => Product, (product) => product.category)
+    @OneToMany(() => Product, (product) => product.category, { onDelete: 'CASCADE'})
     @Field(() => [Product], { nullable: true})
     product: Product[];
 }

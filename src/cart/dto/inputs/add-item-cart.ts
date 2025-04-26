@@ -14,4 +14,8 @@ export class AddItemToCartInput {
     @IsNotEmpty()
     @Field(() => Int)
     quantity: number;
+
+    @IsNotEmpty()
+    @Field(() => Int)
+    cartId: number;
 }

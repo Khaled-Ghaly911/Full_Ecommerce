@@ -63,6 +63,10 @@ export class Product {
     @Field(() => Category, { nullable: true })
     category: Category;
 
+    @Column()
+    @Field(() => Int)
+    categoryId: number;
+
     @Column({nullable: true})
     @Field(() => Int, { nullable: true})
     discount: number;
