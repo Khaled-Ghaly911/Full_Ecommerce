@@ -16,6 +16,8 @@ import { CartItem } from './cart/models/cart_item';
 import { StripeModule } from './stripe/stripe.module';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
 import { ShippingAddress } from './shipping-address/models/address';
+import { ReviewModule } from './review/review.module';
+import { Review } from './review/models/review';
 
 @Module({
   imports: [
@@ -44,7 +46,8 @@ import { ShippingAddress } from './shipping-address/models/address';
             Category, 
             Cart, 
             CartItem, 
-            ShippingAddress
+            ShippingAddress,
+            Review
           ],
           synchronize: true,
         }
@@ -56,7 +59,8 @@ import { ShippingAddress } from './shipping-address/models/address';
     CategoryModule,
     CartModule,
     StripeModule,
-    ShippingAddressModule
+    ShippingAddressModule,
+    ReviewModule
   ],
   controllers: [],
   providers: [],

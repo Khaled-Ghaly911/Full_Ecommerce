@@ -68,9 +68,10 @@ export class AuthResolver {
             secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
             });
         
+            const { exp, iat, ...cleanPayload} = payload;
 
             const newAccessToken = this.jwtService.sign(
-            payload, 
+            cleanPayload, 
             {
                 secret: this.configService.get<string>('JWT_ACCESS_SECRET'), 
                 expiresIn: '2h',
@@ -79,6 +80,7 @@ export class AuthResolver {
         
             return newAccessToken;
         } catch (e) {
+            console.log(`e in refresh token ${e}`);
             throw new UnauthorizedException('Invalid refresh token');
         }
     }

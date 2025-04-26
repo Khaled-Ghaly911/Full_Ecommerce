@@ -74,6 +74,16 @@ type getProductsOutput {
   lastPage: Int!
 }
 
+type Review {
+  id: Int!
+  rating: Float!
+  comment: String!
+  product: Product!
+  productId: Float!
+  user: User!
+  userId: Float!
+}
+
 type Query {
   getUser(userId: Float!): User
   getUsers: [User!]
@@ -85,6 +95,9 @@ type Query {
   getUserCart(userId: Float!): Cart!
   getAddressByUserId(userId: Float!): [ShippingAddress!]!
   getAllAddresses: [ShippingAddress!]!
+  getAllReviews: [Review!]!
+  getReviewsByUserId(userId: Float!): [Review!]!
+  getReviewByProductId(productId: Float!): [Review!]!
 }
 
 input PaginationDto {
@@ -117,6 +130,9 @@ type Mutation {
   createShippingAddress(shippingAddressDto: ShippingAddressInput!): ShippingAddress!
   updateAddress(updateAddressDto: UpdateAddressInput!): ShippingAddress!
   deleteAddressById(addressId: Float!): ShippingAddress!
+  addReview(createReviewDto: CreateReviewInput!): Review!
+  updateReview(updateReviewDto: UpdateReviewInput!): Review!
+  deleteReview(reviewId: Float!): Review!
 }
 
 input CreateUserInput {
@@ -206,4 +222,19 @@ input UpdateAddressInput {
   country: String!
   postalCode: String!
   phoneNumber: String!
+}
+
+input CreateReviewInput {
+  rating: Float!
+  comment: String!
+  productId: Float!
+  userId: Float!
+}
+
+input UpdateReviewInput {
+  id: Int!
+  rating: Int
+  comment: String
+  productId: Int
+  userId: Int
 }
