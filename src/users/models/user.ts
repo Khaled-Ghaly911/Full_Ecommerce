@@ -1,8 +1,9 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 import { Cart } from "src/cart/models/cart";
 import { ShippingAddress } from "src/shipping-address/models/address";
+import { WishList } from "src/wishlist/models/wishlist";
 
 @Entity({ name: 'user'})
 @ObjectType()
@@ -40,4 +41,8 @@ export class User {
     @OneToMany(() => ShippingAddress, (address) => address.user)
     @Field(() => [ShippingAddress])
     addresses: ShippingAddress[];
+
+    @OneToOne(() => WishList)
+    @Field(() => WishList)
+    wishlist: WishList;
 }

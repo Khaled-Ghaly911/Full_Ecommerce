@@ -18,6 +18,8 @@ import { ShippingAddressModule } from './shipping-address/shipping-address.modul
 import { ShippingAddress } from './shipping-address/models/address';
 import { ReviewModule } from './review/review.module';
 import { Review } from './review/models/review';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { WishList } from './wishlist/models/wishlist';
 
 @Module({
   imports: [
@@ -47,7 +49,8 @@ import { Review } from './review/models/review';
             Cart, 
             CartItem, 
             ShippingAddress,
-            Review
+            Review,
+            WishList
           ],
           synchronize: true,
         }
@@ -60,7 +63,8 @@ import { Review } from './review/models/review';
     CartModule,
     StripeModule,
     ShippingAddressModule,
-    ReviewModule
+    ReviewModule,
+    WishlistModule
   ],
   controllers: [],
   providers: [],

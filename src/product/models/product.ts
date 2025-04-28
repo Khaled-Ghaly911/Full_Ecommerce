@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType, Int } from "@nestjs/graphql";
 import { 
     IsString, 
@@ -9,6 +9,7 @@ import {
 } from "class-validator";
 import { Category } from "src/category/models/category";
 import { CartItem } from "src/cart/models/cart_item";
+import { WishList } from "src/wishlist/models/wishlist";
 
 @Entity({name: 'product'})
 @ObjectType()
@@ -70,4 +71,8 @@ export class Product {
     @Column({nullable: true})
     @Field(() => Int, { nullable: true})
     discount: number;
+
+    @ManyToMany(()=> WishList)
+    @JoinTable()
+    whishlist: WishList[];
 }

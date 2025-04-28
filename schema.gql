@@ -8,6 +8,13 @@ type Category {
   product: [Product!]
 }
 
+type WishList {
+  id: Float!
+  user: User!
+  userId: Float!
+  productId: Float!
+}
+
 type Product {
   id: Int!
   name: String!
@@ -56,6 +63,7 @@ type User {
   verified: Boolean
   cart: Cart!
   addresses: [ShippingAddress!]!
+  wishlist: WishList!
 }
 
 type LoginResponse {
