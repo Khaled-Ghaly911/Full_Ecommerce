@@ -1,28 +1,31 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { IsNumber } from "class-validator";
 import { Product } from "src/product/models/product";
 import { User } from "src/users/models/user";
 import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'wishlist'})
+@Entity({ name: 'wishlist' })
 @ObjectType()
 export class WishList {
     @PrimaryGeneratedColumn()
-    @Field()
+    @IsNumber()
+    @Field(() => Int)
     id: number;
 
-    @OneToOne(() => User, {onDelete:'CASCADE'})
+    @OneToOne(() => User, { onDelete: 'CASCADE' })
     @Field(() => User)
     user: User;
 
     @Column()
-    @Field()
+    @IsNumber()
+    @Field(() => Int)
     userId: number;
 
-    @ManyToMany(()=> Product, {onDelete:'CASCADE'})
+    @ManyToMany(() => Product, {
+        cascade: true,  
+        onDelete: 'CASCADE',
+    })
     @JoinTable()
-    product: Product[]
-
-    @Column()
-    @Field()
-    productId: number;
+    @Field(() => [Product])
+    product: Product[];  
 }

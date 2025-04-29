@@ -8,7 +8,6 @@ import {
     IsUrl 
 } from "class-validator";
 import { Category } from "src/category/models/category";
-import { CartItem } from "src/cart/models/cart_item";
 import { WishList } from "src/wishlist/models/wishlist";
 
 @Entity({name: 'product'})

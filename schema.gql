@@ -9,10 +9,10 @@ type Category {
 }
 
 type WishList {
-  id: Float!
+  id: Int!
   user: User!
-  userId: Float!
-  productId: Float!
+  userId: Int!
+  product: [Product!]!
 }
 
 type Product {
@@ -106,6 +106,8 @@ type Query {
   getAllReviews: [Review!]!
   getReviewsByUserId(userId: Float!): [Review!]!
   getReviewByProductId(productId: Float!): [Review!]!
+  getAllWishlists: [WishList!]!
+  getWishlistById(userId: Float!): WishList!
 }
 
 input PaginationDto {
@@ -141,6 +143,11 @@ type Mutation {
   addReview(createReviewDto: CreateReviewInput!): Review!
   updateReview(updateReviewDto: UpdateReviewInput!): Review!
   deleteReview(reviewId: Float!): Review!
+  createWishlist(createWishlistDto: CreateWishlistInput!): WishList!
+  updateWishlist(updateWishlistDto: UpdateWishlistInput!): WishList!
+  addToWishlist(addToWishlist: AddToWishlistInput!): WishList!
+  removeFromWishlist(RemoveToWishlist: AddToWishlistInput!): WishList!
+  deleteWishlist(wishlistId: Float!): WishList!
 }
 
 input CreateUserInput {
@@ -245,4 +252,18 @@ input UpdateReviewInput {
   comment: String
   productId: Int
   userId: Int
+}
+
+input CreateWishlistInput {
+  userId: Int!
+}
+
+input UpdateWishlistInput {
+  id: Int!
+  userId: Int!
+}
+
+input AddToWishlistInput {
+  userId: Int!
+  productId: Int!
 }
