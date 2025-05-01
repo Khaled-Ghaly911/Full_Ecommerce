@@ -92,6 +92,30 @@ type Review {
   userId: Float!
 }
 
+type OrderHistory {
+  id: Int!
+  user: User!
+  userId: Int!
+  cartId: Float!
+  totalAmount: Float!
+  status: OrderStatus!
+  createdAt: DateTime!
+}
+
+"""The status of the order"""
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
   getUser(userId: Float!): User
   getUsers: [User!]
@@ -108,6 +132,9 @@ type Query {
   getReviewByProductId(productId: Float!): [Review!]!
   getAllWishlists: [WishList!]!
   getWishlistById(userId: Float!): WishList!
+  getAllOrderHistory: [OrderHistory!]!
+  getOrderHistoryById(id: Float!): OrderHistory!
+  getOrderHistoryByCartId(cartId: Float!): OrderHistory!
 }
 
 input PaginationDto {
@@ -148,6 +175,8 @@ type Mutation {
   addToWishlist(addToWishlist: AddToWishlistInput!): WishList!
   removeFromWishlist(RemoveToWishlist: AddToWishlistInput!): WishList!
   deleteWishlist(wishlistId: Float!): WishList!
+  createOrderHistory(createOrderHistoryDto: CreateOrderHistoryInput!): OrderHistory!
+  updateOrderHistory(updateOrderHistoryDto: UpdateOrderHistoryInput!): OrderHistory!
 }
 
 input CreateUserInput {
@@ -266,4 +295,18 @@ input UpdateWishlistInput {
 input AddToWishlistInput {
   userId: Int!
   productId: Int!
+}
+
+input CreateOrderHistoryInput {
+  cartId: Float!
+  totalAmount: Float!
+  status: OrderStatus!
+  userId: Int!
+}
+
+input UpdateOrderHistoryInput {
+  cartId: Float
+  totalAmount: Float!
+  status: OrderStatus
+  userId: Float
 }

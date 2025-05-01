@@ -20,6 +20,8 @@ import { ReviewModule } from './review/review.module';
 import { Review } from './review/models/review';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { WishList } from './wishlist/models/wishlist';
+import { OrderHistoryModule } from './order-history/order-history.module';
+import { OrderHistory } from './order-history/models/oderHistory';
 
 @Module({
   imports: [
@@ -50,7 +52,8 @@ import { WishList } from './wishlist/models/wishlist';
             CartItem, 
             ShippingAddress,
             Review,
-            WishList
+            WishList,
+            OrderHistory
           ],
           synchronize: true,
         }
@@ -64,7 +67,8 @@ import { WishList } from './wishlist/models/wishlist';
     StripeModule,
     ShippingAddressModule,
     ReviewModule,
-    WishlistModule
+    WishlistModule,
+    OrderHistoryModule
   ],
   controllers: [],
   providers: [],
